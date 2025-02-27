@@ -52423,10 +52423,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
-    - target: {fileID: 1985051742283037468, guid: 82217255b130bcf428ceabc533e6a029, type: 3}
-      propertyPath: m_TagString
-      value: Player
-      objectReference: {fileID: 0}
     - target: {fileID: 3389635700804846520, guid: 82217255b130bcf428ceabc533e6a029, type: 3}
       propertyPath: m_LocalPosition.x
       value: -94.92
@@ -52471,10 +52467,6 @@ PrefabInstance:
       propertyPath: hitStop
       value: 
       objectReference: {fileID: 2012903782}
-    - target: {fileID: 8210804761848653982, guid: 82217255b130bcf428ceabc533e6a029, type: 3}
-      propertyPath: cameraShake
-      value: 
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

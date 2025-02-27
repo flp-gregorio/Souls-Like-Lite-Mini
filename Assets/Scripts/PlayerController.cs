@@ -22,7 +22,6 @@ public class PlayerController : MonoBehaviour
     Vector2 moveInput;
 
     [Header("Combat")]
-    private float _attackMovementLock = 0.5f;
 
     // Serialized fields
     [SerializeField]
@@ -187,26 +186,33 @@ public class PlayerController : MonoBehaviour
             }
         }
     }
-
     public void OnAttack(InputAction.CallbackContext context)
     {
-        if (context.started && CanMove && !IsDodging)
+        if (context.started && CanMove && !IsDodging && touchingDirections.IsGrounded)
         {
-            if (!IsAttacking && stamina.TryUseStamina(20f))
+            if (!IsAttacking)
             {
-                animator.SetTrigger(AnimationStrings.AttackTrigger);
-
-                // Optional: Add slight backward push for weapon impact feel
-                if (touchingDirections.IsGrounded)
+                // Start Attack1
+                if (stamina.TryUseStamina(20f))
                 {
-                    rb.AddForce(new Vector2(-transform.localScale.x * _attackMovementLock, 0),
-                        ForceMode2D.Impulse);
+                    animator.ResetTrigger(AnimationStrings.AttackTrigger);
+                    animator.SetTrigger(AnimationStrings.AttackTrigger);
                 }
+            }
+            else
+            {
+                // Queue Attack2 during Attack1's recovery frames
+                animator.SetBool(AnimationStrings.QueueAttack, true);
             }
         }
     }
-
-    // Add this new method for animation events
+    public void EnableQueuing() => animator.SetBool(AnimationStrings.QueueAttack, true);
+    
+    public void ResetQueue()
+    {
+        animator.SetBool(AnimationStrings.QueueAttack, false);
+        animator.ResetTrigger(AnimationStrings.AttackTrigger);
+    }
     public void LockMovementDuringAttack(int shouldLock)
     {
         animator.SetBool(AnimationStrings.lockVelocity, shouldLock == 1);

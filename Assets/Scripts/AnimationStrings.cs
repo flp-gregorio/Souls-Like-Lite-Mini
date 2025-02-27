@@ -14,6 +14,8 @@ internal class AnimationStrings
     internal static string IsOnWall = "IsOnWall";
     internal static string IsOnCeiling = "IsOnCeiling";
     internal static string AttackTrigger = "Attack";
+    internal static string IsAttacking = "IsAttacking";
+    internal static string QueueAttack = "QueueAttack";
     internal static string CanMove = "CanMove";
     internal static string HasTarget = "HasTarget";
     internal static string IsAlive = "IsAlive";
@@ -23,6 +25,5 @@ internal class AnimationStrings
     internal static string AttackCooldown = "AttackCooldown";
     internal static string DodgeTrigger = "Roll";
     internal static string IsDodging = "IsDodging";
-    internal static string IsAttacking = "IsAttacking";
-    internal static string ComboCount = "ComboCount";
+    
 }
