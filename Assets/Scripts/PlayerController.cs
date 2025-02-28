@@ -1,7 +1,8 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-[RequireComponent(typeof(Rigidbody2D), typeof(TouchingDirections), typeof(Damageable)), RequireComponent(typeof(Stamina))]
+[RequireComponent(typeof(Rigidbody2D), typeof(CombatManager), typeof(TouchingDirections))]
+[RequireComponent(typeof(Damageable))]
 public class PlayerController : MonoBehaviour
 {
 
@@ -29,11 +30,11 @@ public class PlayerController : MonoBehaviour
     public bool _IsFacingRight = true;
 
     // Component references
-    TouchingDirections touchingDirections;
-    Damageable damageable;
-    Rigidbody2D rb;
-    Animator animator;
-    Stamina stamina;
+    public TouchingDirections touchingDirections;
+    public Damageable damageable;
+    public Rigidbody2D rb;
+    public Animator animator;
+    public CombatManager _combatManager;
 
     #endregion
 
@@ -114,7 +115,7 @@ public class PlayerController : MonoBehaviour
         animator = GetComponent<Animator>();
         touchingDirections = GetComponent<TouchingDirections>();
         damageable = GetComponent<Damageable>();
-        stamina = GetComponent<Stamina>();
+        _combatManager = GetComponent<CombatManager>();
     }
 
     // Start is called before the first frame update
@@ -135,7 +136,7 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (!damageable.LockVelocity)
+        if (!damageable.LockVelocity && CanMove)
         {
             float targetSpeed = moveInput.x * walkSpeed;
 
@@ -176,43 +177,21 @@ public class PlayerController : MonoBehaviour
     {
         if (context.started)
         {
-            if (CanMove)
+            if (CanMove && touchingDirections.IsGrounded && !IsDodging)
             {
-                if (touchingDirections.IsGrounded)
-                {
-                    rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0);
-                    rb.AddForce(Vector2.up * jumpImpulse, ForceMode2D.Impulse);
-                }
+                rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0);
+                rb.AddForce(Vector2.up * jumpImpulse, ForceMode2D.Impulse);
             }
         }
     }
     public void OnAttack(InputAction.CallbackContext context)
     {
-        if (context.started && CanMove && !IsDodging && touchingDirections.IsGrounded)
+        if (_combatManager != null)
         {
-            if (!IsAttacking)
-            {
-                // Start Attack1
-                if (stamina.TryUseStamina(20f))
-                {
-                    animator.ResetTrigger(AnimationStrings.AttackTrigger);
-                    animator.SetTrigger(AnimationStrings.AttackTrigger);
-                }
-            }
-            else
-            {
-                // Queue Attack2 during Attack1's recovery frames
-                animator.SetBool(AnimationStrings.QueueAttack, true);
-            }
+            _combatManager.OnAttack(context);
         }
     }
-    public void EnableQueuing() => animator.SetBool(AnimationStrings.QueueAttack, true);
-    
-    public void ResetQueue()
-    {
-        animator.SetBool(AnimationStrings.QueueAttack, false);
-        animator.ResetTrigger(AnimationStrings.AttackTrigger);
-    }
+
     public void LockMovementDuringAttack(int shouldLock)
     {
         animator.SetBool(AnimationStrings.lockVelocity, shouldLock == 1);
@@ -220,16 +199,18 @@ public class PlayerController : MonoBehaviour
 
     public void OnDodge(InputAction.CallbackContext context)
     {
-        if (context.started && touchingDirections.IsGrounded && !IsDodging && stamina.TryUseStamina(20f))
+        if (_combatManager != null)
         {
-            animator.SetTrigger(AnimationStrings.DodgeTrigger);
-            animator.SetBool("IsDodging", true);
-            animator.SetBool("CanMove", false);
+            _combatManager.OnDodge(context);
         }
     }
 
     public void OnHit(float damage, Vector2 knockback)
     {
+        if (animator.GetBool(AnimationStrings.IsDodging))
+        {
+            return;
+        }
         rb.linearVelocity = new Vector2(knockback.x, rb.linearVelocity.y + knockback.y);
     }
 

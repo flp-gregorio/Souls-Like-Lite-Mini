@@ -119,6 +119,17 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!114 &86737555 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3983028135310747970, guid: 949ccafc79fec5f41a7e3a2cc8e47a31, type: 3}
+  m_PrefabInstance: {fileID: 3198073353589138217}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6e378e30948dab6438a7854e447c448b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &142649634
 GameObject:
   m_ObjectHideFlags: 0
@@ -403,7 +414,7 @@ Transform:
   m_GameObject: {fileID: 431250546}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -7.4, z: 0}
+  m_LocalPosition: {x: 0, y: -6.99, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -52411,6 +52422,17 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2130679077 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 340770034404214900, guid: 949ccafc79fec5f41a7e3a2cc8e47a31, type: 3}
+  m_PrefabInstance: {fileID: 3198073353589138217}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6e378e30948dab6438a7854e447c448b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &2863155357237930148
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -52463,6 +52485,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3574356894895038421, guid: 82217255b130bcf428ceabc533e6a029, type: 3}
+      propertyPath: canReceiveInput
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8210804761848653982, guid: 82217255b130bcf428ceabc533e6a029, type: 3}
       propertyPath: hitStop
       value: 
@@ -52484,17 +52510,37 @@ PrefabInstance:
       propertyPath: m_Name
       value: GoblinEnemy
       objectReference: {fileID: 0}
+    - target: {fileID: 4019540803772390851, guid: 949ccafc79fec5f41a7e3a2cc8e47a31, type: 3}
+      propertyPath: player
+      value: 
+      objectReference: {fileID: 1444006410}
+    - target: {fileID: 4019540803772390851, guid: 949ccafc79fec5f41a7e3a2cc8e47a31, type: 3}
+      propertyPath: _player
+      value: 
+      objectReference: {fileID: 1444006410}
+    - target: {fileID: 4019540803772390851, guid: 949ccafc79fec5f41a7e3a2cc8e47a31, type: 3}
+      propertyPath: _attackZone
+      value: 
+      objectReference: {fileID: 2130679077}
+    - target: {fileID: 4019540803772390851, guid: 949ccafc79fec5f41a7e3a2cc8e47a31, type: 3}
+      propertyPath: chaseDistance
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 4019540803772390851, guid: 949ccafc79fec5f41a7e3a2cc8e47a31, type: 3}
+      propertyPath: _cliffDetectionZone
+      value: 
+      objectReference: {fileID: 86737555}
     - target: {fileID: 5838954881441859031, guid: 949ccafc79fec5f41a7e3a2cc8e47a31, type: 3}
       propertyPath: hitStop
       value: 
       objectReference: {fileID: 2012903782}
     - target: {fileID: 7607070217810805759, guid: 949ccafc79fec5f41a7e3a2cc8e47a31, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -100.9
+      value: -100.78
       objectReference: {fileID: 0}
     - target: {fileID: 7607070217810805759, guid: 949ccafc79fec5f41a7e3a2cc8e47a31, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.75
+      value: -0.24
       objectReference: {fileID: 0}
     - target: {fileID: 7607070217810805759, guid: 949ccafc79fec5f41a7e3a2cc8e47a31, type: 3}
       propertyPath: m_LocalPosition.z

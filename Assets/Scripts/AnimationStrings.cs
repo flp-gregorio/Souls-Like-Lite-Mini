@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 internal class AnimationStrings
 {
+    
     // Add your animation string constants here
     internal static string IsMoving = "IsMoving";
     internal static string IsGrounded = "IsGrounded";
@@ -14,6 +15,7 @@ internal class AnimationStrings
     internal static string IsOnWall = "IsOnWall";
     internal static string IsOnCeiling = "IsOnCeiling";
     internal static string AttackTrigger = "Attack";
+    internal static string Attack2Trigger = "Attack2";
     internal static string IsAttacking = "IsAttacking";
     internal static string QueueAttack = "QueueAttack";
     internal static string CanMove = "CanMove";
@@ -25,5 +27,5 @@ internal class AnimationStrings
     internal static string AttackCooldown = "AttackCooldown";
     internal static string DodgeTrigger = "Roll";
     internal static string IsDodging = "IsDodging";
-    
+    internal static string IsChasing = "IsChasing";
 }

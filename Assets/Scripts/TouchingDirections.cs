@@ -15,6 +15,12 @@ public class TouchingDirections : MonoBehaviour
     [Tooltip("Distance to check for ceiling contact")]
     [SerializeField] private float ceilingDistance = 0.05f;
 
+    [Header("Enemy Detection")]
+    [Tooltip("Layer mask for enemy collisions")]
+    [SerializeField] private LayerMask Enemy;
+    [Tooltip("Distance to check for enemy collision (using an OverlapBox)")]
+    [SerializeField] private Vector2 enemyCheckSize = new Vector2(0.5f, 0.5f);
+
     [Header("Debug Visualization")]
     [SerializeField] private bool showDebugRays = true;
 
@@ -25,7 +31,7 @@ public class TouchingDirections : MonoBehaviour
     private Animator animator;
     private Collider2D col;
 
-    // Use arrays with reasonable capacity for collision detection
+    // Arrays for ground, wall, and ceiling detection
     private readonly RaycastHit2D[] groundHits = new RaycastHit2D[10];
     private readonly RaycastHit2D[] wallHits = new RaycastHit2D[10];
     private readonly RaycastHit2D[] ceilingHits = new RaycastHit2D[10];
@@ -67,7 +73,15 @@ public class TouchingDirections : MonoBehaviour
         }
     }
 
-    // Cache wall check direction based on scale
+    // New property for enemy detection
+    private bool _isTouchingEnemy;
+    public bool IsTouchingEnemy
+    {
+        get => _isTouchingEnemy;
+        private set => _isTouchingEnemy = value;
+    }
+
+    // Cache wall check direction based on local scale
     private Vector2 WallCheckDirection => transform.localScale.x > 0 ? Vector2.right : Vector2.left;
 
     private void Awake()
@@ -87,6 +101,7 @@ public class TouchingDirections : MonoBehaviour
         PerformGroundCheck();
         PerformWallCheck();
         PerformCeilingCheck();
+        PerformEnemyCheck();
 
         if (showDebugRays)
         {
@@ -118,6 +133,15 @@ public class TouchingDirections : MonoBehaviour
         IsOnCeiling = hitCount > 0;
     }
 
+    // New method to check for enemy collisions using an OverlapBox
+    private void PerformEnemyCheck()
+    {
+        // Adjust the center of the box if needed (here we use the collider's bounds)
+        Vector2 boxCenter = col.bounds.center;
+        Collider2D enemyCollider = Physics2D.OverlapBox(boxCenter, enemyCheckSize, 0f, Enemy);
+        IsTouchingEnemy = enemyCollider != null;
+    }
+
     private void DrawDebugRays()
     {
         // Ground check
@@ -126,5 +150,9 @@ public class TouchingDirections : MonoBehaviour
         Debug.DrawRay(col.bounds.center, WallCheckDirection * (col.bounds.extents.x + wallDistance), Color.blue);
         // Ceiling check
         Debug.DrawRay(col.bounds.center, Vector2.up * (col.bounds.extents.y + ceilingDistance), Color.red);
+
+        // Draw enemy check box (for visualization)
+        Vector3 enemyBoxSize = new Vector3(enemyCheckSize.x, enemyCheckSize.y, 0f);
+        Debug.DrawLine(col.bounds.center - enemyBoxSize * 0.5f, col.bounds.center + enemyBoxSize * 0.5f, Color.magenta);
     }
 }

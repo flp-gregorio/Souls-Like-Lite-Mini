@@ -12,6 +12,7 @@ public class SetBoolBehavior : StateMachineBehaviour
     {
         if (updateOnState)
         {
+            Debug.Log("Entering state, setting " + boolName + " to " + valueOnEnter);
             animator.SetBool(boolName, valueOnEnter);
         }
     }
@@ -27,6 +28,7 @@ public class SetBoolBehavior : StateMachineBehaviour
     {
         if (updateOnState)
         {
+            Debug.Log("Exiting state, setting " + boolName + " to " + valueOnExit);
             animator.SetBool(boolName, valueOnExit);
         }
     }
