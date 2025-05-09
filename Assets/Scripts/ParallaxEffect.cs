@@ -15,14 +15,14 @@ public class ParallaxEffect : MonoBehaviour
     float startingZ;
 
     // Distance the camera has moved from the starting position of the parallax game object
-    Vector2 camMoveSinceStart => (Vector2)cam.transform.position - startingPosition;
+    Vector2 CamMoveSinceStart => (Vector2)cam.transform.position - startingPosition;
 
-    float zDistanceFromTarget => transform.position.z - followTarget.position.z;
+    float ZDistanceFromTarget => transform.position.z - followTarget.position.z;
 
-    float clippingPlane => cam.transform.position.z + (zDistanceFromTarget > 0 ? cam.farClipPlane : cam.nearClipPlane);
+    float ClippingPlane => cam.transform.position.z + (ZDistanceFromTarget > 0 ? cam.farClipPlane : cam.nearClipPlane);
 
     // Parallax factor to multiply the camera movement by
-    float parallaxFactor => Mathf.Abs(zDistanceFromTarget) / 25 * clippingPlane;
+    float ParallaxFactor => Mathf.Abs(ZDistanceFromTarget) / 25 * ClippingPlane;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -35,8 +35,8 @@ public class ParallaxEffect : MonoBehaviour
     void Update()
     {
         // Calculate new horizontal and vertical offsets separately
-        float newX = startingPosition.x + camMoveSinceStart.x * parallaxFactor;
-        float newY = startingPosition.y + camMoveSinceStart.y * parallaxFactor * verticalParallaxMultiplier;
+        float newX = startingPosition.x + CamMoveSinceStart.x * ParallaxFactor;
+        float newY = startingPosition.y + CamMoveSinceStart.y * ParallaxFactor * verticalParallaxMultiplier;
         
         transform.position = new Vector3(newX, newY, startingZ);
     }

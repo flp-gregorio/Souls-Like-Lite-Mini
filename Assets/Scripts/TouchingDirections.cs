@@ -1,3 +1,4 @@
+using Animation;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D), typeof(Collider2D), typeof(Animator))]
@@ -17,7 +18,7 @@ public class TouchingDirections : MonoBehaviour
 
     [Header("Enemy Detection")]
     [Tooltip("Layer mask for enemy collisions")]
-    [SerializeField] private LayerMask Enemy;
+    [SerializeField] private LayerMask enemy;
     [Tooltip("Distance to check for enemy collision (using an OverlapBox)")]
     [SerializeField] private Vector2 enemyCheckSize = new Vector2(0.5f, 0.5f);
 
@@ -40,7 +41,10 @@ public class TouchingDirections : MonoBehaviour
     private bool _isGrounded;
     public bool IsGrounded
     {
-        get => _isGrounded;
+        get
+        {
+            return _isGrounded;
+        }
         private set
         {
             if (_isGrounded == value) return;
@@ -52,7 +56,10 @@ public class TouchingDirections : MonoBehaviour
     private bool _isOnWall;
     public bool IsOnWall
     {
-        get => _isOnWall;
+        get
+        {
+            return _isOnWall;
+        }
         private set
         {
             if (_isOnWall == value) return;
@@ -61,28 +68,17 @@ public class TouchingDirections : MonoBehaviour
         }
     }
 
-    private bool _isOnCeiling;
-    public bool IsOnCeiling
-    {
-        get => _isOnCeiling;
-        private set
-        {
-            if (_isOnCeiling == value) return;
-            _isOnCeiling = value;
-            if (animator) animator.SetBool(AnimationStrings.IsOnCeiling, value);
-        }
-    }
-
     // New property for enemy detection
-    private bool _isTouchingEnemy;
-    public bool IsTouchingEnemy
-    {
-        get => _isTouchingEnemy;
-        private set => _isTouchingEnemy = value;
-    }
+    public bool IsTouchingEnemy { get; private set; }
 
     // Cache wall check direction based on local scale
-    private Vector2 WallCheckDirection => transform.localScale.x > 0 ? Vector2.right : Vector2.left;
+    private Vector2 WallCheckDirection
+    {
+        get
+        {
+            return transform.localScale.x > 0 ? Vector2.right : Vector2.left;
+        }
+    }
 
     private void Awake()
     {
@@ -100,7 +96,6 @@ public class TouchingDirections : MonoBehaviour
     {
         PerformGroundCheck();
         PerformWallCheck();
-        PerformCeilingCheck();
         PerformEnemyCheck();
 
         if (showDebugRays)
@@ -117,29 +112,21 @@ public class TouchingDirections : MonoBehaviour
 
     private void PerformWallCheck()
     {
-        if (disableWallDetection)
-        {
-            IsOnWall = false;
-            return;
-        }
-
-        var hitCount = rb.Cast(WallCheckDirection, contactFilter, wallHits, wallDistance);
-        IsOnWall = hitCount > 0;
+        // Calculate an offset upward – adjust 0.5f as needed.
+        Vector2 offset = Vector2.up * (col.bounds.extents.y * 0.5f);
+        // You can use a Raycast from an adjusted origin instead of rb.Cast.
+        RaycastHit2D hit = Physics2D.Raycast((Vector2)col.bounds.center + offset, WallCheckDirection, wallDistance, contactFilter.layerMask);
+        IsOnWall = (hit.collider is not null);
     }
 
-    private void PerformCeilingCheck()
-    {
-        var hitCount = rb.Cast(Vector2.up, contactFilter, ceilingHits, ceilingDistance);
-        IsOnCeiling = hitCount > 0;
-    }
-
+    
     // New method to check for enemy collisions using an OverlapBox
     private void PerformEnemyCheck()
     {
         // Adjust the center of the box if needed (here we use the collider's bounds)
         Vector2 boxCenter = col.bounds.center;
-        Collider2D enemyCollider = Physics2D.OverlapBox(boxCenter, enemyCheckSize, 0f, Enemy);
-        IsTouchingEnemy = enemyCollider != null;
+        Collider2D enemyCollider = Physics2D.OverlapBox(boxCenter, enemyCheckSize, 0f, enemy);
+        IsTouchingEnemy = enemyCollider is not null;
     }
 
     private void DrawDebugRays()

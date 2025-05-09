@@ -1,3 +1,4 @@
+using Combat;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -6,9 +7,9 @@ public class HealthBar : MonoBehaviour
 {
     public Slider healthSlider;
     public TMP_Text healthBarText;
-    Damageable _playerDamageable;
+    CharacterStats characterStats;
 
-    void Awake()
+    void Start()
     {
         InitializePlayerReference();
         InitializeUIValues();
@@ -24,7 +25,7 @@ public class HealthBar : MonoBehaviour
             return;
         }
 
-        if (!player.TryGetComponent(out _playerDamageable))
+        if (!player.TryGetComponent(out characterStats))
         {
             //Debug.LogError("Player missing Damageable component!");
         }
@@ -32,19 +33,19 @@ public class HealthBar : MonoBehaviour
 
     void InitializeUIValues()
     {
-        if (_playerDamageable == null) return;
+        if (characterStats == null) return;
 
         // Initialize values immediately
-        UpdateHealthUI(_playerDamageable.Health, _playerDamageable.MaxHealth);
+        UpdateHealthUI(characterStats.Health, characterStats.MaxHealth);
         
         // Register listener for future changes
-        _playerDamageable.healthChanged.AddListener(UpdateHealthUI);
+        characterStats.healthChanged.AddListener(UpdateHealthUI);
     }
 
     void OnDisable()
     {
-        if (_playerDamageable != null)
-            _playerDamageable.healthChanged.RemoveListener(UpdateHealthUI);
+        if (characterStats != null)
+            characterStats.healthChanged.RemoveListener(UpdateHealthUI);
     }
 
     void UpdateHealthUI(float currentHealth, float maxHealth)

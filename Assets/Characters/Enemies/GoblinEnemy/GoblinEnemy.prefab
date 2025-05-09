@@ -11,8 +11,8 @@ GameObject:
   - component: {fileID: 4394230050280425906}
   - component: {fileID: 3475297759297466192}
   - component: {fileID: 340770034404214900}
-  m_Layer: 6
-  m_Name: HitboxDetectionZone
+  m_Layer: 7
+  m_Name: AttackZone
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -46,7 +46,7 @@ BoxCollider2D:
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 4294967295
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -59,15 +59,15 @@ BoxCollider2D:
     m_Bits: 4294967295
   m_ContactCaptureLayers:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 128
   m_CallbackLayers:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 128
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 1.01, y: -0.3973719}
+  m_Offset: {x: 1.1145287, y: -0.44331586}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -77,7 +77,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 2.48, y: 1.9547441}
+  m_Size: {x: 1.5864029, y: 2.046632}
   m_EdgeRadius: 0
 --- !u!114 &340770034404214900
 MonoBehaviour:
@@ -110,8 +110,8 @@ GameObject:
   - component: {fileID: 4019540803772390851}
   - component: {fileID: 4092548724898535725}
   - component: {fileID: 7569294126073511783}
-  - component: {fileID: 5838954881441859031}
   - component: {fileID: 1520897951385397041}
+  - component: {fileID: 6639224264958715957}
   m_Layer: 8
   m_Name: GoblinEnemy
   m_TagString: Untagged
@@ -275,9 +275,8 @@ MonoBehaviour:
   attackZone: {fileID: 340770034404214900}
   cliffDetectionZone: {fileID: 3983028135310747970}
   player: {fileID: 0}
-  chaseDistance: 5
-  initialPatrolTimerValue: 5
-  patrolTimer: 5
+  chaseDistance: 10
+  patrolDuration: 4
 --- !u!114 &4092548724898535725
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -307,6 +306,10 @@ MonoBehaviour:
   groundDistance: 0.05
   wallDistance: 0.05
   ceilingDistance: 0.05
+  enemy:
+    serializedVersion: 2
+    m_Bits: 0
+  enemyCheckSize: {x: 0.5, y: 0.5}
   showDebugRays: 1
   disableWallDetection: 0
 --- !u!95 &7569294126073511783
@@ -331,42 +334,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &5838954881441859031
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 778726843902893640}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a917a55656ef8304baa44701aa36af0e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  damageableHit:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 4019540803772390851}
-        m_TargetAssemblyTypeName: Goblin, Assembly-CSharp
-        m_MethodName: OnHit
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-  healthChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  hitStop: {fileID: 0}
-  _maxHealth: 100
-  _health: 100
-  _isAlive: 1
-  IsInvencible: 0
-  InvencibilityTime: 0.05
 --- !u!114 &1520897951385397041
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -427,6 +394,48 @@ MonoBehaviour:
   UseImpactDirection: 1
   ScaleImpactWithMass: 0
   ScaleImpactWithSpeed: 0
+--- !u!114 &6639224264958715957
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 778726843902893640}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9dbdfc73c3597c347aac095956662ce5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  damageableHit:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 4019540803772390851}
+        m_TargetAssemblyTypeName: Goblin, Assembly-CSharp
+        m_MethodName: OnHit
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  healthChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  hitStopManager: {fileID: 0}
+  maxHealth: 100
+  health: 100
+  isAlive: 1
+  isInvincible: 0
+  invincibilityTime: 0.25
+  staminaChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  maxStamina: 100
+  staminaRegenRate: 50
+  staminaDisplaySpeed: 5
 --- !u!1 &5785297387222795092
 GameObject:
   m_ObjectHideFlags: 0
@@ -639,8 +648,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 24bce2719506b7a4291d1b8607c501fa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  AttackDamage: 10
-  knockback: {x: 5, y: 2}
+  attackDamage: 10
+  knockback: {x: 2, y: 2}
 --- !u!1 &7127212587189665170
 GameObject:
   m_ObjectHideFlags: 0
@@ -743,5 +752,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 24bce2719506b7a4291d1b8607c501fa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  AttackDamage: 10
+  attackDamage: 10
   knockback: {x: 5, y: 2}

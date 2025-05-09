@@ -1,3 +1,4 @@
+using Combat;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -6,9 +7,9 @@ public class StaminaBar : MonoBehaviour
 {
     public Slider staminaSlider;
     public TMP_Text staminaBarText;
-    Stamina _playerStamina;
+    CharacterStats characterStats;
 
-    void Awake()
+    void Start()
     {
         InitializePlayerReference();
         InitializeUIValues();
@@ -24,27 +25,28 @@ public class StaminaBar : MonoBehaviour
             return;
         }
 
-        if (!player.TryGetComponent(out _playerStamina))
+        if (!player.TryGetComponent(out characterStats))
         {
             //Debug.LogError("Player missing Damageable component!");
+            return;
         }
     }
 
     void InitializeUIValues()
     {
-        if (_playerStamina == null) return;
+        if (characterStats == null) return;
 
         // Initialize values immediately
-        UpdateStaminaUI(_playerStamina.CurrentStamina, _playerStamina.MaxStamina);
+        UpdateStaminaUI(characterStats.CurrentStamina, characterStats.MaxStamina);
         
         // Register listener for future changes
-        _playerStamina.StaminaChanged.AddListener(UpdateStaminaUI);
+        characterStats.staminaChanged.AddListener(UpdateStaminaUI);
     }
 
     void OnDisable()
     {
-        if (_playerStamina != null)
-            _playerStamina.StaminaChanged.RemoveListener(UpdateStaminaUI);
+        if (characterStats != null)
+            characterStats.staminaChanged.RemoveListener(UpdateStaminaUI);
     }
 
     void UpdateStaminaUI(float currentStamina, float maxStamina)
