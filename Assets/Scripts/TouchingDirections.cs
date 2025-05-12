@@ -28,14 +28,14 @@ public class TouchingDirections : MonoBehaviour
     [Header("Wall Detection")]
     public bool disableWallDetection;
 
-    private Rigidbody2D rb;
-    private Animator animator;
-    private Collider2D col;
+    private Rigidbody2D _rb;
+    private Animator _animator;
+    private Collider2D _col;
 
     // Arrays for ground, wall, and ceiling detection
-    private readonly RaycastHit2D[] groundHits = new RaycastHit2D[10];
-    private readonly RaycastHit2D[] wallHits = new RaycastHit2D[10];
-    private readonly RaycastHit2D[] ceilingHits = new RaycastHit2D[10];
+    private readonly RaycastHit2D[] _groundHits = new RaycastHit2D[10];
+    private readonly RaycastHit2D[] _wallHits = new RaycastHit2D[10];
+    private readonly RaycastHit2D[] _ceilingHits = new RaycastHit2D[10];
 
     // Automatic property handling with change detection
     private bool _isGrounded;
@@ -49,7 +49,7 @@ public class TouchingDirections : MonoBehaviour
         {
             if (_isGrounded == value) return;
             _isGrounded = value;
-            if (animator) animator.SetBool(AnimationStrings.IsGrounded, value);
+            if (_animator) _animator.SetBool(AnimationStrings.IsGrounded, value);
         }
     }
 
@@ -64,7 +64,7 @@ public class TouchingDirections : MonoBehaviour
         {
             if (_isOnWall == value) return;
             _isOnWall = value;
-            if (animator) animator.SetBool(AnimationStrings.IsOnWall, value);
+            if (_animator) _animator.SetBool(AnimationStrings.IsOnWall, value);
         }
     }
 
@@ -82,11 +82,11 @@ public class TouchingDirections : MonoBehaviour
 
     private void Awake()
     {
-        rb = GetComponent<Rigidbody2D>();
-        animator = GetComponent<Animator>();
-        col = GetComponent<Collider2D>();
+        _rb = GetComponent<Rigidbody2D>();
+        _animator = GetComponent<Animator>();
+        _col = GetComponent<Collider2D>();
 
-        if (col == null)
+        if (_col == null)
         {
             Debug.LogError($"No Collider2D attached to {gameObject.name}", gameObject);
         }
@@ -106,16 +106,16 @@ public class TouchingDirections : MonoBehaviour
 
     private void PerformGroundCheck()
     {
-        var hitCount = rb.Cast(Vector2.down, contactFilter, groundHits, groundDistance);
+        var hitCount = _rb.Cast(Vector2.down, contactFilter, _groundHits, groundDistance);
         IsGrounded = hitCount > 0;
     }
 
     private void PerformWallCheck()
     {
         // Calculate an offset upward – adjust 0.5f as needed.
-        Vector2 offset = Vector2.up * (col.bounds.extents.y * 0.5f);
+        Vector2 offset = Vector2.up * (_col.bounds.extents.y * 0.5f);
         // You can use a Raycast from an adjusted origin instead of rb.Cast.
-        RaycastHit2D hit = Physics2D.Raycast((Vector2)col.bounds.center + offset, WallCheckDirection, wallDistance, contactFilter.layerMask);
+        RaycastHit2D hit = Physics2D.Raycast((Vector2)_col.bounds.center + offset, WallCheckDirection, wallDistance, contactFilter.layerMask);
         IsOnWall = (hit.collider is not null);
     }
 
@@ -124,7 +124,7 @@ public class TouchingDirections : MonoBehaviour
     private void PerformEnemyCheck()
     {
         // Adjust the center of the box if needed (here we use the collider's bounds)
-        Vector2 boxCenter = col.bounds.center;
+        Vector2 boxCenter = _col.bounds.center;
         Collider2D enemyCollider = Physics2D.OverlapBox(boxCenter, enemyCheckSize, 0f, enemy);
         IsTouchingEnemy = enemyCollider is not null;
     }
@@ -132,14 +132,14 @@ public class TouchingDirections : MonoBehaviour
     private void DrawDebugRays()
     {
         // Ground check
-        Debug.DrawRay(col.bounds.center, Vector2.down * (col.bounds.extents.y + groundDistance), Color.green);
+        Debug.DrawRay(_col.bounds.center, Vector2.down * (_col.bounds.extents.y + groundDistance), Color.green);
         // Wall check
-        Debug.DrawRay(col.bounds.center, WallCheckDirection * (col.bounds.extents.x + wallDistance), Color.blue);
+        Debug.DrawRay(_col.bounds.center, WallCheckDirection * (_col.bounds.extents.x + wallDistance), Color.blue);
         // Ceiling check
-        Debug.DrawRay(col.bounds.center, Vector2.up * (col.bounds.extents.y + ceilingDistance), Color.red);
+        Debug.DrawRay(_col.bounds.center, Vector2.up * (_col.bounds.extents.y + ceilingDistance), Color.red);
 
         // Draw enemy check box (for visualization)
         Vector3 enemyBoxSize = new Vector3(enemyCheckSize.x, enemyCheckSize.y, 0f);
-        Debug.DrawLine(col.bounds.center - enemyBoxSize * 0.5f, col.bounds.center + enemyBoxSize * 0.5f, Color.magenta);
+        Debug.DrawLine(_col.bounds.center - enemyBoxSize * 0.5f, _col.bounds.center + enemyBoxSize * 0.5f, Color.magenta);
     }
 }

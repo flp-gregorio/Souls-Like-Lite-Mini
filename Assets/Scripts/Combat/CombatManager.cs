@@ -9,7 +9,7 @@ namespace Combat
     [RequireComponent(typeof(CharacterStats))]
     public class CombatManager : MonoBehaviour
     {
-        public static CombatManager Instance;
+        static public CombatManager instance;
 
         [SerializeField]
         private bool debugging = false; // Toggle this in the inspector
@@ -30,7 +30,7 @@ namespace Combat
             _animator = GetComponent<Animator>();
             _player = GetComponent<PlayerController>();
             _rb = GetComponent<Rigidbody2D>();
-            Instance = this;
+            instance = this;
             canReceiveInput = true;
         }
 

@@ -7,7 +7,7 @@ public class HealthBar : MonoBehaviour
 {
     public Slider healthSlider;
     public TMP_Text healthBarText;
-    CharacterStats characterStats;
+    CharacterStats _characterStats;
 
     void Start()
     {
@@ -25,7 +25,7 @@ public class HealthBar : MonoBehaviour
             return;
         }
 
-        if (!player.TryGetComponent(out characterStats))
+        if (!player.TryGetComponent(out _characterStats))
         {
             //Debug.LogError("Player missing Damageable component!");
         }
@@ -33,19 +33,19 @@ public class HealthBar : MonoBehaviour
 
     void InitializeUIValues()
     {
-        if (characterStats == null) return;
+        if (_characterStats == null) return;
 
         // Initialize values immediately
-        UpdateHealthUI(characterStats.Health, characterStats.MaxHealth);
+        UpdateHealthUI(_characterStats.Health, _characterStats.MaxHealth);
         
         // Register listener for future changes
-        characterStats.healthChanged.AddListener(UpdateHealthUI);
+        _characterStats.healthChanged.AddListener(UpdateHealthUI);
     }
 
     void OnDisable()
     {
-        if (characterStats != null)
-            characterStats.healthChanged.RemoveListener(UpdateHealthUI);
+        if (_characterStats != null)
+            _characterStats.healthChanged.RemoveListener(UpdateHealthUI);
     }
 
     void UpdateHealthUI(float currentHealth, float maxHealth)

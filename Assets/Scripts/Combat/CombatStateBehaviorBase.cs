@@ -16,9 +16,9 @@ namespace Combat
 
         override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
         {
-            if (CombatManager.Instance != null)
+            if (CombatManager.instance != null)
             {
-                CombatManager.Instance.HandleCombatState(stateName);
+                CombatManager.instance.HandleCombatState(stateName);
             }
             else
             {

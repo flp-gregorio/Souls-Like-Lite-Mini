@@ -9,11 +9,11 @@ namespace Combat
         private float hitStopDuration = 0.1f;
         [SerializeField]
         private float hitStopTimeScale = 0.01f;
-        private bool isHitStopping;
+        private bool _isHitStopping;
 
         public void TriggerHitStop()
         {
-            if (!isHitStopping)
+            if (!_isHitStopping)
             {
                 StartCoroutine(DoHitStop());
             }
@@ -21,11 +21,11 @@ namespace Combat
 
         private IEnumerator DoHitStop()
         {
-            isHitStopping = true;
+            _isHitStopping = true;
             Time.timeScale = hitStopTimeScale;
             yield return new WaitForSecondsRealtime(hitStopDuration);
             Time.timeScale = 1f;
-            isHitStopping = false;
+            _isHitStopping = false;
         }
     }
 }

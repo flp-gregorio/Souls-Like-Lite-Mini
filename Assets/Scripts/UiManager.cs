@@ -1,6 +1,5 @@
 using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
+using System.Globalization;
 using TMPro;
 
 public class UiManager : MonoBehaviour
@@ -17,32 +16,36 @@ public class UiManager : MonoBehaviour
 
     private void OnEnable()
     {
-        CharacterEvents.CharacterDamaged += CharacterTookDamage;
-        CharacterEvents.CharacterHealed += CharacterHealed;
+        CharacterEvents.characterDamaged += CharacterTookDamage;
+        CharacterEvents.characterHealed += CharacterHealed;
     }
 
     private void OnDisable()
     {
-        CharacterEvents.CharacterDamaged -= CharacterTookDamage;
-        CharacterEvents.CharacterHealed -= CharacterHealed;
+        CharacterEvents.characterDamaged -= CharacterTookDamage;
+        CharacterEvents.characterHealed -= CharacterHealed;
     }
 
-    public void CharacterTookDamage(GameObject character, float damageReceived)
+    void CharacterTookDamage(GameObject character, float damageReceived)
     {
         // Create text at character hit
+        if (!Camera.main)
+            return;
         Vector3 spawnPosition = Camera.main.WorldToScreenPoint(character.transform.position);
 
         TMP_Text tmpText = Instantiate(damageTextPrefab, spawnPosition, Quaternion.identity, gameCanvas.transform)
             .GetComponent<TMP_Text>();
-        tmpText.text = damageReceived.ToString();
+        tmpText.text = damageReceived.ToString(CultureInfo.InvariantCulture);
     }
 
-    public void CharacterHealed(GameObject character, float healthRestored)
-    {
-        Vector3 spawnPosition = Camera.main.WorldToScreenPoint(character.transform.position);
+     void CharacterHealed(GameObject character, float healthRestored)
+     {
+         if (!Camera.main)
+             return;
+         Vector3 spawnPosition = Camera.main.WorldToScreenPoint(character.transform.position);
 
-        TMP_Text tmpText = Instantiate(healthTextPrefab, spawnPosition, Quaternion.identity, gameCanvas.transform)
-            .GetComponent<TMP_Text>();
-        tmpText.text = healthRestored.ToString();
-    }
+         TMP_Text tmpText = Instantiate(healthTextPrefab, spawnPosition, Quaternion.identity, gameCanvas.transform)
+             .GetComponent<TMP_Text>();
+         tmpText.text = healthRestored.ToString(CultureInfo.CurrentCulture);
+     }
 }

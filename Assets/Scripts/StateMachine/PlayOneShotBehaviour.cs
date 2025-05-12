@@ -8,8 +8,8 @@ public class PlayOneShotBehaviour : StateMachineBehaviour
 
     // Delayed sound timer
     public float playDelay = 0.25f;
-    float timeSinceEntered = 0f;
-    private bool hasDelayedSoundPlayed = false;
+    float _timeSinceEntered = 0f;
+    private bool _hasDelayedSoundPlayed = false;
 
     // OnStateEnter is called when a transition starts and the state machine starts to evaluate this state
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
@@ -19,20 +19,20 @@ public class PlayOneShotBehaviour : StateMachineBehaviour
             AudioSource.PlayClipAtPoint(soundToPlay, animator.gameObject.transform.position, volume);
         }
 
-        timeSinceEntered = 0f;
-        hasDelayedSoundPlayed = false;
+        _timeSinceEntered = 0f;
+        _hasDelayedSoundPlayed = false;
     }
 
     // OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
     override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        if (playAfterDelay && !hasDelayedSoundPlayed)
+        if (playAfterDelay && !_hasDelayedSoundPlayed)
         {
-            timeSinceEntered += Time.deltaTime;
-            if (timeSinceEntered > playDelay)
+            _timeSinceEntered += Time.deltaTime;
+            if (_timeSinceEntered > playDelay)
             {
                 AudioSource.PlayClipAtPoint(soundToPlay, animator.gameObject.transform.position, volume);
-                hasDelayedSoundPlayed = true;
+                _hasDelayedSoundPlayed = true;
             }
         }
 
@@ -45,8 +45,8 @@ public class PlayOneShotBehaviour : StateMachineBehaviour
         {
             AudioSource.PlayClipAtPoint(soundToPlay, animator.gameObject.transform.position, volume);
         }
-        timeSinceEntered = 0f;
-        hasDelayedSoundPlayed = false;
+        _timeSinceEntered = 0f;
+        _hasDelayedSoundPlayed = false;
     }
 
 

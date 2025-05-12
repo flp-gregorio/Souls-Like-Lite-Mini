@@ -22,5 +22,6 @@ namespace Animation
         static readonly public string CanDash = "CanDash";
         static readonly public string IsDodging = "IsDodging";
         static readonly public string IsDashing = "IsDashing";
+        static readonly public string IsJumping = "IsJumping";
     }
 }

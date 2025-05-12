@@ -22,37 +22,37 @@ namespace Characters
         public float attackIdleDistance = 2f; // Distance at which to stay idle when in attack cooldown
 
         private const float FlipCooldown = 0.2f;
-        private float lastFlipTime;
+        private float _lastFlipTime;
 
-        private Rigidbody2D rb;
-        private TouchingDirections touchingDirections;
-        private Animator animator;
-        private CharacterStats characterStats;
+        private Rigidbody2D _rb;
+        private TouchingDirections _touchingDirections;
+        private Animator _animator;
+        private CharacterStats _characterStats;
 
-        private Coroutine patrolCoroutine;
-        private bool isPatrolling = false;
+        private Coroutine _patrolCoroutine;
+        private bool _isPatrolling = false;
 
         // Using a single float for direction: 1 = right, -1 = left.
-        private float moveDirection = 1f;
+        private float _moveDirection = 1f;
 
         // Cached animator parameter hashes (requires AnimationStrings to define these names)
         private static readonly int IsMovingHash = Animator.StringToHash(AnimationStrings.IsMoving);
         private static readonly int HasTargetHash = Animator.StringToHash(AnimationStrings.HasTarget);
         private static readonly int CanMoveHash = Animator.StringToHash(AnimationStrings.CanMove);
         private static readonly int AttackCooldownHash = Animator.StringToHash(AnimationStrings.AttackCooldown);
-        private int hitCount = 0; // Tracks how many times the Goblin has been hit
+        private int _hitCount = 0; // Tracks how many times the Goblin has been hit
         const float BaseAttackChance = 0.1f; // Initial chance to attack (10%)
         const float AttackChanceIncreasePerHit = 0.1f; // Chance increment per hit (10%)
 
         private static readonly int TryAttack1 = Animator.StringToHash("TryAttack");
-        private bool isInAttackCooldown = false;
+        private bool _isInAttackCooldown = false;
 
         private void Awake()
         {
-            rb = GetComponent<Rigidbody2D>();
-            touchingDirections = GetComponent<TouchingDirections>();
-            animator = GetComponent<Animator>();
-            characterStats = GetComponent<CharacterStats>();
+            _rb = GetComponent<Rigidbody2D>();
+            _touchingDirections = GetComponent<TouchingDirections>();
+            _animator = GetComponent<Animator>();
+            _characterStats = GetComponent<CharacterStats>();
         }
 
         private void Start()
@@ -63,42 +63,42 @@ namespace Characters
         private void Update()
         {
             // Update attack cooldown and target detection.
-            float attackCooldown = animator.GetFloat(AttackCooldownHash);
+            float attackCooldown = _animator.GetFloat(AttackCooldownHash);
             if (attackCooldown > 0)
             {
-                animator.SetFloat(AttackCooldownHash, Mathf.Max(attackCooldown - Time.deltaTime, 0f));
-                animator.SetBool(HasTargetHash, false);
-                isInAttackCooldown = true;
+                _animator.SetFloat(AttackCooldownHash, Mathf.Max(attackCooldown - Time.deltaTime, 0f));
+                _animator.SetBool(HasTargetHash, false);
+                _isInAttackCooldown = true;
             }
             else
             {
-                animator.SetBool(HasTargetHash, attackZone.detectedColliders.Count > 0);
-                isInAttackCooldown = false;
+                _animator.SetBool(HasTargetHash, attackZone.detectedColliders.Count > 0);
+                _isInAttackCooldown = false;
             }
 
             // Set animator "IsMoving" based on horizontal velocity.
-            animator.SetBool(IsMovingHash, Mathf.Abs(rb.linearVelocity.x) > 0.01f);
+            _animator.SetBool(IsMovingHash, Mathf.Abs(_rb.linearVelocity.x) > 0.01f);
         }
 
         private void FixedUpdate()
         {
-            bool shouldChase = player && Vector2.Distance(player.position, rb.position) <= chaseDistance;
-            float distanceToPlayer = player ? Vector2.Distance(player.position, rb.position) : float.MaxValue;
+            bool shouldChase = player && Vector2.Distance(player.position, _rb.position) <= chaseDistance;
+            float distanceToPlayer = player ? Vector2.Distance(player.position, _rb.position) : float.MaxValue;
             
             // Flip if the goblin is grounded but stuck on a wall.
-            if (touchingDirections.IsGrounded && touchingDirections.IsOnWall && CanMove())
+            if (_touchingDirections.IsGrounded && _touchingDirections.IsOnWall && CanMove())
             {
                 FlipDirection();
             }
 
             // Determine if we should stop moving due to being in attack cooldown and close to player
-            bool shouldStopForCooldown = isInAttackCooldown && distanceToPlayer <= attackIdleDistance;
+            bool shouldStopForCooldown = _isInAttackCooldown && distanceToPlayer <= attackIdleDistance;
 
             if (shouldStopForCooldown)
             {
                 // Stay in place but face the player
                 StopPatrolling();
-                moveDirection = (player.position.x - rb.position.x) > 0 ? 1f : -1f;
+                _moveDirection = (player.position.x - _rb.position.x) > 0 ? 1f : -1f;
                 UpdateSpriteDirection();
                 SetVelocityToZero();
             }
@@ -106,13 +106,13 @@ namespace Characters
             {
                 StopPatrolling();
                 // Face toward the player.
-                moveDirection = (player.position.x - rb.position.x) > 0 ? 1f : -1f;
+                _moveDirection = (player.position.x - _rb.position.x) > 0 ? 1f : -1f;
                 UpdateSpriteDirection();
                 
                 // Only move if not in cooldown or far enough from player
                 UpdateMovement();
             }
-            else if (!isPatrolling)
+            else if (!_isPatrolling)
             {
                 StartPatrolling();
                 UpdateMovement();
@@ -125,24 +125,24 @@ namespace Characters
 
         private void SetVelocityToZero()
         {
-            if (!characterStats.LockVelocity)
+            if (!_characterStats.LockVelocity)
             {
-                Vector2 velocity = rb.linearVelocity;
+                Vector2 velocity = _rb.linearVelocity;
                 velocity.x = Mathf.Lerp(velocity.x, 0, walkStopRate * 3); // Faster stop rate
-                rb.linearVelocity = velocity;
+                _rb.linearVelocity = velocity;
             }
         }
         
         private void UpdateMovement()
         {
             // Only update velocity if not locked.
-            if (!characterStats.LockVelocity)
+            if (!_characterStats.LockVelocity)
             {
-                Vector2 velocity = rb.linearVelocity;
+                Vector2 velocity = _rb.linearVelocity;
                 if (CanMove())
                 {
                     velocity.x = Mathf.Clamp(
-                        velocity.x + walkAcceleration * moveDirection * Time.fixedDeltaTime,
+                        velocity.x + walkAcceleration * _moveDirection * Time.fixedDeltaTime,
                         -maxSpeed,
                         maxSpeed);
                 }
@@ -150,30 +150,30 @@ namespace Characters
                 {
                     velocity.x = Mathf.Lerp(velocity.x, 0, walkStopRate);
                 }
-                rb.linearVelocity = velocity;
+                _rb.linearVelocity = velocity;
             }
         }
 
         private bool CanMove()
         {
-            return animator.GetBool(CanMoveHash);
+            return _animator.GetBool(CanMoveHash);
         }
 
         private void StartPatrolling()
         {
-            if (!isPatrolling)
+            if (!_isPatrolling)
             {
-                isPatrolling = true;
-                patrolCoroutine = StartCoroutine(PatrolRoutine());
+                _isPatrolling = true;
+                _patrolCoroutine = StartCoroutine(PatrolRoutine());
             }
         }
 
         private void StopPatrolling()
         {
-            if (isPatrolling && patrolCoroutine != null)
+            if (_isPatrolling && _patrolCoroutine != null)
             {
-                StopCoroutine(patrolCoroutine);
-                isPatrolling = false;
+                StopCoroutine(_patrolCoroutine);
+                _isPatrolling = false;
             }
         }
 
@@ -182,9 +182,9 @@ namespace Characters
             // Simplified patrol: move for a period, then stop, then flip.
             while (true)
             {
-                animator.SetBool(IsMovingHash, true);
+                _animator.SetBool(IsMovingHash, true);
                 yield return new WaitForSeconds(patrolDuration);
-                animator.SetBool(IsMovingHash, false);
+                _animator.SetBool(IsMovingHash, false);
                 yield return new WaitForSeconds(patrolDuration);
                 FlipDirection();
             }
@@ -192,11 +192,11 @@ namespace Characters
 
         private void FlipDirection()
         {
-            if (Time.time - lastFlipTime < FlipCooldown)
+            if (Time.time - _lastFlipTime < FlipCooldown)
                 return;
 
-            lastFlipTime = Time.time;
-            moveDirection *= -1;
+            _lastFlipTime = Time.time;
+            _moveDirection *= -1;
             UpdateSpriteDirection();
         }
 
@@ -204,18 +204,18 @@ namespace Characters
         {
             // Flip sprite horizontally by adjusting the local scale.
             Vector3 scale = transform.localScale;
-            scale.x = Mathf.Abs(scale.x) * (moveDirection > 0 ? 1 : -1);
+            scale.x = Mathf.Abs(scale.x) * (_moveDirection > 0 ? 1 : -1);
             transform.localScale = scale;
         }
 
         public void OnHit(float damage, Vector2 knockback)
         {
-            rb.linearVelocity = Vector2.zero;
-            rb.AddForce(knockback, ForceMode2D.Impulse);
+            _rb.linearVelocity = Vector2.zero;
+            _rb.AddForce(knockback, ForceMode2D.Impulse);
 
             // Increment hit count and calculate attack chance
-            hitCount++;
-            float currentAttackChance = BaseAttackChance + (hitCount * AttackChanceIncreasePerHit);
+            _hitCount++;
+            float currentAttackChance = BaseAttackChance + (_hitCount * AttackChanceIncreasePerHit);
 
             // Attempt to trigger an attack based on the calculated chance
             if (Random.value <= currentAttackChance)
@@ -228,14 +228,14 @@ namespace Characters
         
         void TryAttack()
         {
-            animator.SetTrigger(TryAttack1);
+            _animator.SetTrigger(TryAttack1);
         }
 
         public void OnCliffDetected()
         {
-            if (touchingDirections.IsGrounded)
+            if (_touchingDirections.IsGrounded)
             {
-                Debug.Log("Flip due to cliff");
+                //Debug.Log("Flip due to cliff");
                 FlipDirection();
             }
         }

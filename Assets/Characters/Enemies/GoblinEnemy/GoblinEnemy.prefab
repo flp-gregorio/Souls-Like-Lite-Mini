@@ -277,6 +277,7 @@ MonoBehaviour:
   player: {fileID: 0}
   chaseDistance: 10
   patrolDuration: 4
+  attackIdleDistance: 2
 --- !u!114 &4092548724898535725
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -425,8 +426,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   hitStopManager: {fileID: 0}
-  maxHealth: 100
-  health: 100
+  maxHealth: 50
+  health: 50
   isAlive: 1
   isInvincible: 0
   invincibilityTime: 0.25
@@ -434,8 +435,13 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   maxStamina: 100
-  staminaRegenRate: 50
+  normalRegenRate: 15
+  depletedRegenRate: 5
   staminaDisplaySpeed: 5
+  criticalStaminaThreshold: 1
+  requireFullRegenAfterDepletion: 1
+  regenDelayAfterUse: 1
+  debugStamina: 0
 --- !u!1 &5785297387222795092
 GameObject:
   m_ObjectHideFlags: 0

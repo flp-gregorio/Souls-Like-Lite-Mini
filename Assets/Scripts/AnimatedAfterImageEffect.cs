@@ -16,21 +16,21 @@ public class AnimatedAfterImageEffect : MonoBehaviour
     [Header("Debugging")]
     [SerializeField] private bool showDebugInfo = true;
     
-    private SpriteRenderer spriteRenderer;
-    private Vector3 lastPosition;
-    private List<AfterImageInstance> activeImages = new List<AfterImageInstance>();
+    private SpriteRenderer _spriteRenderer;
+    private Vector3 _lastPosition;
+    private List<AfterImageInstance> _activeImages = new List<AfterImageInstance>();
     
     private void Start()
     {
-        spriteRenderer = GetComponent<SpriteRenderer>();
-        if (spriteRenderer == null)
+        _spriteRenderer = GetComponent<SpriteRenderer>();
+        if (_spriteRenderer == null)
         {
             Debug.LogError("AnimatedAfterImageEffect: No SpriteRenderer found on this GameObject!");
             enabled = false;
             return;
         }
         
-        lastPosition = transform.position;
+        _lastPosition = transform.position;
         
         if (showDebugInfo)
         {
@@ -41,21 +41,21 @@ public class AnimatedAfterImageEffect : MonoBehaviour
     private void LateUpdate()
     {
         // Clean up expired images
-        for (int i = activeImages.Count - 1; i >= 0; i--)
+        for (int i = _activeImages.Count - 1; i >= 0; i--)
         {
-            if (Time.time > activeImages[i].EndTime)
+            if (Time.time > _activeImages[i].EndTime)
             {
-                Destroy(activeImages[i].GameObject);
-                activeImages.RemoveAt(i);
+                Destroy(_activeImages[i].GameObject);
+                _activeImages.RemoveAt(i);
             }
         }
         
         // Create new after-image based on distance moved
-        float distanceMoved = Vector3.Distance(transform.position, lastPosition);
+        float distanceMoved = Vector3.Distance(transform.position, _lastPosition);
         if (distanceMoved >= distanceThreshold)
         {
             CreateAfterImage();
-            lastPosition = transform.position;
+            _lastPosition = transform.position;
             
             if (showDebugInfo)
             {
@@ -67,17 +67,17 @@ public class AnimatedAfterImageEffect : MonoBehaviour
     private void CreateAfterImage()
     {
         // Check if SpriteRenderer has a valid sprite
-        if (spriteRenderer.sprite == null)
+        if (_spriteRenderer.sprite == null)
         {
             Debug.LogWarning("AnimatedAfterImageEffect: No sprite to copy!");
             return;
         }
         
         // Limit the number of images
-        if (activeImages.Count >= maxImages)
+        if (_activeImages.Count >= maxImages)
         {
-            Destroy(activeImages[0].GameObject);
-            activeImages.RemoveAt(0);
+            Destroy(_activeImages[0].GameObject);
+            _activeImages.RemoveAt(0);
         }
         
         // Create new object with sprite renderer
@@ -90,11 +90,11 @@ public class AnimatedAfterImageEffect : MonoBehaviour
         SpriteRenderer imageSpriteRenderer = imageObj.AddComponent<SpriteRenderer>();
         
         // Copy current animation frame and properties
-        imageSpriteRenderer.sprite = spriteRenderer.sprite;
-        imageSpriteRenderer.flipX = spriteRenderer.flipX;
-        imageSpriteRenderer.flipY = spriteRenderer.flipY;
-        imageSpriteRenderer.sortingLayerID = spriteRenderer.sortingLayerID;
-        imageSpriteRenderer.sortingOrder = spriteRenderer.sortingOrder - 1;
+        imageSpriteRenderer.sprite = _spriteRenderer.sprite;
+        imageSpriteRenderer.flipX = _spriteRenderer.flipX;
+        imageSpriteRenderer.flipY = _spriteRenderer.flipY;
+        imageSpriteRenderer.sortingLayerID = _spriteRenderer.sortingLayerID;
+        imageSpriteRenderer.sortingOrder = _spriteRenderer.sortingOrder - 1;
         
         // Set up the material for blending
         if (blendMaterial)
@@ -115,7 +115,7 @@ public class AnimatedAfterImageEffect : MonoBehaviour
         
         // Use the original sprite color multiplied by our overlay color
         // This preserves the original colors but tints them purple
-        Color originalColor = spriteRenderer.color;
+        Color originalColor = _spriteRenderer.color;
         Color combinedColor = new Color(
             originalColor.r * overlayColor.r,
             originalColor.g * overlayColor.g,
@@ -135,7 +135,7 @@ public class AnimatedAfterImageEffect : MonoBehaviour
         fadeBehavior.originalColor = originalColor;
         
         // Track the instance
-        activeImages.Add(new AfterImageInstance
+        _activeImages.Add(new AfterImageInstance
         {
             GameObject = imageObj,
             EndTime = Time.time + imageDuration
@@ -158,13 +158,13 @@ public class AfterImageFade : MonoBehaviour
     public bool preserveOriginalColor;
     public Color originalColor;
     
-    private SpriteRenderer spriteRenderer;
-    private float startTime;
+    private SpriteRenderer _spriteRenderer;
+    private float _startTime;
     
     private void Start()
     {
-        spriteRenderer = GetComponent<SpriteRenderer>();
-        if (spriteRenderer == null)
+        _spriteRenderer = GetComponent<SpriteRenderer>();
+        if (_spriteRenderer == null)
         {
             if (showDebug)
             {
@@ -174,7 +174,7 @@ public class AfterImageFade : MonoBehaviour
             return;
         }
         
-        startTime = Time.time;
+        _startTime = Time.time;
         
         if (showDebug)
         {
@@ -184,7 +184,7 @@ public class AfterImageFade : MonoBehaviour
     
     private void Update()
     {
-        float progress = (Time.time - startTime) / duration;
+        float progress = (Time.time - _startTime) / duration;
         if (progress >= 1)
         {
             if (showDebug)
@@ -208,12 +208,12 @@ public class AfterImageFade : MonoBehaviour
                 originalColor.a * currentOverlay.a
             );
             
-            spriteRenderer.color = blendedColor;
+            _spriteRenderer.color = blendedColor;
         }
         else
         {
             // Simple color lerp
-            spriteRenderer.color = Color.Lerp(startColor, endColor, progress);
+            _spriteRenderer.color = Color.Lerp(startColor, endColor, progress);
         }
     }
 }
